@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC
+     "-//W3C//DTD HTML 4.01 Transitional//EN"
+     "http://www.w3.org/TR/html4/loose.dtd">
+ <html>
+
+<head>
+    <META HTTP_EQUIV=Content-Type CONTENT="text/html;charset=utf-8">
+    <script type="text/javascript" src="../../src/gv1z.js"></script>
+    <script type="text/javascript" src="../../src/force_directed_layout.js"></script>
+    <style>
+
+        .gv-mainscreen {
+            border: solid 1px;
+        }
+
+        .gv-minimap {
+            border: solid 1px;
+        }
+
+    </style>
+</head>
+<body onload="init()">
+    <div class="gv-debug" id="debug"></div>
+    <canvas class="gv-mainscreen" id="screen"></canvas>
+    <canvas class="gv-minimap" id="minimap"></canvas>
+
+
+    <script>
+        function init() {
+            "use strict";
+            
+            example3();
+        }
+        
+        function example1() {
+            "use strict";
+            
+            var graph = {
+
+                nodes : [
+                    new gv.SimpleNode("0", new gv.Point(0,0)),
+                    new gv.SimpleNode("1", new gv.Point(0,0)),
+                    new gv.SimpleNode("2", new gv.Point(0,0)),
+                    new gv.SimpleNode("3", new gv.Point(0,0)),
+                    new gv.SimpleNode("4", new gv.Point(0,0)),
+                    new gv.SimpleNode("5", new gv.Point(0,0)),
+                    new gv.SimpleNode("6", new gv.Point(0,0)),
+                    new gv.SimpleNode("7", new gv.Point(0,0))
+                ]
+            };
+
+            graph.edges = [
+                new gv.SimpleEdge(graph.nodes[1], graph.nodes[0]),
+                new gv.SimpleEdge(graph.nodes[2], graph.nodes[0]),
+                new gv.SimpleEdge(graph.nodes[3], graph.nodes[1]),
+                new gv.SimpleEdge(graph.nodes[3], graph.nodes[4]),
+                new gv.SimpleEdge(graph.nodes[7], graph.nodes[3]),
+                new gv.SimpleEdge(graph.nodes[7], graph.nodes[4]),
+                new gv.SimpleEdge(graph.nodes[7], graph.nodes[6]),
+                new gv.SimpleEdge(graph.nodes[6], graph.nodes[4]),
+                new gv.SimpleEdge(graph.nodes[6], graph.nodes[5])
+            ];
+            
+            var c = new gv.MainController("screen", {
+                screenWidth  : 400,
+                screenHeight : 400,
+                moveSpeed    : 200
+            }, "debug");
+            
+            c.start(graph);
+            c.startOverview("minimap");
+            c.applyLayout(new gv.ForceDirectedLayout(20, 10));
+        };
+
+        function example2() {
+            "use strict";
+
+            var graph = {
+                nodes : [],
+                edges : []
+            };
+
+            var scale = 30;
+            var field = 10;
+
+            for (var i=0;i<scale;i++) {
+                graph.nodes.push(new gv.SimpleNode(""+i,
+                    new gv.Point(Math.floor(Math.random()*field),
+                                 Math.floor(Math.random()*field))));
+            }
+            for (var i=0;i<scale;i++) {
+                graph.edges.push(new gv.SimpleEdge(graph.nodes[Math.floor(Math.random()*scale)], graph.nodes[Math.floor(Math.random()*scale)]));
+            }
+
+            var c = new gv.MainController("screen", {
+                screenWidth  : 400,
+                screenHeight : 400,
+                moveSpeed    : 200
+            }, "debug");
+            
+            c.start(graph);
+            c.startOverview("minimap");
+            c.applyLayout(new gv.ForceDirectedLayout(20, 10));            
+        }
+
+        function example3() {
+            "use strict";
+
+            var graph = {
+
+                nodes : [
+                    new gv.SimpleNode("0", new gv.Point(0,0)),
+                    new gv.SimpleNode("1", new gv.Point(0,0)),
+                    new gv.SimpleNode("2", new gv.Point(0,0)),
+                    new gv.SimpleNode("3", new gv.Point(0,0)),
+                    new gv.SimpleNode("4", new gv.Point(0,0)),
+                    new gv.SimpleNode("5", new gv.Point(0,0)),
+                    new gv.SimpleNode("6", new gv.Point(0,0)),
+                    new gv.SimpleNode("7", new gv.Point(0,0)),
+
+                    // Create a separate graph
+                    new gv.SimpleNode("a", new gv.Point(0,0)), //  8
+                    new gv.SimpleNode("b", new gv.Point(0,0)), //  9
+                    new gv.SimpleNode("c", new gv.Point(0,0)), // 10
+                    new gv.SimpleNode("d", new gv.Point(0,0)), // 11
+
+                    // Create orphan nodes
+                    new gv.SimpleNode("o1", new gv.Point(0,0)), // 12
+                    new gv.SimpleNode("o2", new gv.Point(0,0))  // 13
+                ]
+            };
+
+            graph.edges = [
+                new gv.SimpleEdge(graph.nodes[1], graph.nodes[0]),
+                new gv.SimpleEdge(graph.nodes[2], graph.nodes[0]),
+                new gv.SimpleEdge(graph.nodes[3], graph.nodes[1]),
+                new gv.SimpleEdge(graph.nodes[3], graph.nodes[4]),
+                new gv.SimpleEdge(graph.nodes[7], graph.nodes[3]),
+                new gv.SimpleEdge(graph.nodes[7], graph.nodes[4]),
+                new gv.SimpleEdge(graph.nodes[7], graph.nodes[6]),
+                new gv.SimpleEdge(graph.nodes[6], graph.nodes[4]),
+                new gv.SimpleEdge(graph.nodes[6], graph.nodes[5]),
+
+                // Create a circle
+                new gv.SimpleEdge(graph.nodes[0], graph.nodes[3]),
+
+                // Create a recursive relationship
+                new gv.SimpleEdge(graph.nodes[2], graph.nodes[2]),
+                new gv.SimpleEdge(graph.nodes[0], graph.nodes[0]),
+
+                // Create a circle in a separate graph
+                new gv.SimpleEdge(graph.nodes[8], graph.nodes[9]),
+                new gv.SimpleEdge(graph.nodes[9], graph.nodes[10]),
+                new gv.SimpleEdge(graph.nodes[10], graph.nodes[8]),
+                new gv.SimpleEdge(graph.nodes[10], graph.nodes[11])
+            ];
+            
+            var c = new gv.MainController("screen", {
+                screenWidth  : 400,
+                screenHeight : 400,
+                moveSpeed    : 200
+            }, "debug");
+            
+            c.start(graph);
+            c.startOverview("minimap");
+            c.applyLayout(new gv.ForceDirectedLayout(20, 10));
+        };
+        
+    </script>
+
+</body>
+</html>

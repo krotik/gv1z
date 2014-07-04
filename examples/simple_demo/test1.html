@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC
+     "-//W3C//DTD HTML 4.01 Transitional//EN"
+     "http://www.w3.org/TR/html4/loose.dtd">
+ <html>
+
+<head>
+    <META HTTP_EQUIV=Content-Type CONTENT="text/html;charset=utf-8">
+    <script type="text/javascript" src="../../src/gv1z.js"></script>
+    <script type="text/javascript" src="../../src/sugiyama_layout.js"></script>
+    <style>
+
+        .gv-mainscreen {
+            border: solid 1px;
+        }
+
+        .gv-minimap {
+            border: solid 1px;
+        }
+
+    </style>
+</head>
+<body onload="init()">
+    <div class="gv-debug" id="debug"></div>
+    <canvas class="gv-mainscreen" id="screen"></canvas>
+    <canvas class="gv-minimap" id="minimap"></canvas>
+
+
+    <script>
+        function init() {
+            "use strict";
+
+            var graph = {
+
+                nodes : [
+                    new gv.SimpleNode("0", new gv.Point(0,0)),
+                    new gv.SimpleNode("1", new gv.Point(0,0)),
+                    new gv.SimpleNode("2", new gv.Point(0,0)),
+                    new gv.SimpleNode("3", new gv.Point(0,0)),
+                    new gv.SimpleNode("4", new gv.Point(0,0)),
+                    new gv.SimpleNode("5", new gv.Point(0,0)),
+                    new gv.SimpleNode("6", new gv.Point(0,0)),
+                    new gv.SimpleNode("7", new gv.Point(0,0))
+                ]
+            };
+
+            graph.edges = [
+                new gv.SimpleEdge(graph.nodes[1], graph.nodes[0]),
+                new gv.SimpleEdge(graph.nodes[2], graph.nodes[0]),
+                new gv.SimpleEdge(graph.nodes[3], graph.nodes[1]),
+                new gv.SimpleEdge(graph.nodes[3], graph.nodes[4]),
+                new gv.SimpleEdge(graph.nodes[7], graph.nodes[3]),
+                new gv.SimpleEdge(graph.nodes[7], graph.nodes[4]),
+                new gv.SimpleEdge(graph.nodes[7], graph.nodes[6]),
+                new gv.SimpleEdge(graph.nodes[6], graph.nodes[4]),
+                new gv.SimpleEdge(graph.nodes[6], graph.nodes[5])
+            ];
+            
+            var c = new gv.MainController("screen", {
+                screenWidth  : 400,
+                screenHeight : 400,
+                moveSpeed    : 200
+            }
+            /* ,"debug"  -- Activate this if you want to see FPS*/
+            );
+            
+            c.start(graph);
+            c.startOverview("minimap");
+            c.applyLayout(new gv.SquareLayout(50, 100));
+        };
+        
+    </script>
+
+</body>
+</html>
