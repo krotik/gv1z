@@ -6,7 +6,7 @@ Canvas based graph visualization engine. This implementation is not bound to any
 
 Gv1z was written by [Matthias Ladkau](http://www.ladkau.de).
 
-Based on: 
+The gv.ForceDirectedLayout layout is based on: 
 
 Springy
 by Dennis Hotson
@@ -18,7 +18,7 @@ Gv1z is released under the [MIT license](http://mit-license.org).
 
 ## How to use
 
-Best take a look in the example folder. There is are simple demos which demonstrate the basic concepts.
+Best take a look in the example folder. There are simple demos which demonstrate the basic concepts.
 
 1. Define a graph
 
