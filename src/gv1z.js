@@ -285,8 +285,8 @@ gv.Class = function() {};
     };
 })();
 
-// Default Objects
-// ===============
+// Model Classes
+// =============
 
 gv.Point = gv.Class.create({
 
@@ -739,6 +739,9 @@ gv.SimpleEdge = gv.AbstractNodeAssociation.create({
     }
 });
 
+// Handler functions
+// =================
+
 // Default event handler
 //
 gv.default_eventHandler = {
@@ -881,6 +884,8 @@ gv.default_overview_eventHandler = {
 };
 
 // Images for icons
+// ================
+
 gv.images = {
         pan     : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAQAAAD8x0bcAAAAAmJLR0" +
                   "QA/4ePzL8AAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfeBA0KHiwIBH8IAAAAvklEQVQoz5" +
@@ -905,6 +910,9 @@ gv.images = {
                   "5d9UPMHDvbYT0PXHi2lO+z2+qS/Xb/+E/fcJZAueAkgf8AAAAASUVORK5CYII="
 };
 
+// Constants
+// =========
+
 // Operation modes for controller
 //
 gv.mode = {
@@ -919,6 +927,9 @@ gv.modelupdate = {
     NODE_MOVE        : 0,
     NEW_MODEL_BOUNDS : 1
 };
+
+// Default Options
+// ===============
 
 gv.default_options = {
 
@@ -972,8 +983,12 @@ gv.default_options = {
     initialMode   : gv.mode.NAVIGATION
 };
 
+// Layouts can register their options here
+gv.default_layout_options = {};
+
 // Main Controller
 // ===============
+
 gv.MainController = gv.Class.create({
 
     // Constants
@@ -1018,6 +1033,7 @@ gv.MainController = gv.Class.create({
         this._lastMouseDownPos = {};
         this._selectedNodes = [];
         this._internalModelChangeListeners = [];
+        this._internalStopListeners = [];
 
         // Load images
         this._img_pan           = new Image();
@@ -1131,6 +1147,9 @@ gv.MainController = gv.Class.create({
         "use strict";
         this.running = false;
         this.deRegisterEventHandlers();
+        for (var i = 0; i < this._internalStopListeners.length; i++) {
+            this._internalStopListeners[i].stop();
+        }
     },
 
     // Change current operation mode.
@@ -1202,6 +1221,10 @@ gv.MainController = gv.Class.create({
                     overViewController.centerViewToModel(true);
                 }
             }, this, overViewController));
+
+        // Also register the overview to be stopped if the
+        // controller is stopped
+        this._internalStopListeners.push(overViewController);
 
         overViewController.start(this._state.graph);
         overViewController.centerViewToModel(true);
@@ -1348,8 +1371,8 @@ gv.MainController = gv.Class.create({
         // Remove canvas specific event handlers
         for (var i=0;i<this._registeredEventHandlers.length;i++) {
 
-            var eventName  = this._registeredEventHandlers[i][0],
-                responder  = this._registeredEventHandlers[i][1];
+            var eventName  = this._registeredEventHandlers[i][1],
+                responder  = this._registeredEventHandlers[i][2];
 
             if (this._screen.removeEventListener) {
                 this._screen.removeEventListener(eventName, responder, false);
@@ -3054,7 +3077,7 @@ gv.CircleLayout = gv.AbstractLayout.create({
         var delta = 2 * Math.PI / graph.nodes.length,
             step = 0;
 
-            
+
         for (var i=0; i < graph.nodes.length; i++) {
             var node = graph.nodes[i];
 
@@ -3062,7 +3085,7 @@ gv.CircleLayout = gv.AbstractLayout.create({
                 x : Math.cos(step) * this._xpad,
                 y : Math.sin(step) * this._ypad
             });
-            
+
             step += delta;
         }
     },

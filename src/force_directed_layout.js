@@ -4,6 +4,13 @@
 // Simple debug flag which enables console.log logging
 gv.ForceDirectedLayoutDebug = false;
 
+gv.default_layout_options.ForceDirectedLayout = {
+    "stiffness"     : 400.0,
+    "repulsion"     : 400.0,
+    "damping"       : 0.5,
+    "stopThreshold" : 0.1
+};
+
 gv.ForceDirectedLayout = gv.AbstractLayout.create({
 
     init : function (xpad, ypad, options) {
@@ -22,10 +29,10 @@ gv.ForceDirectedLayout = gv.AbstractLayout.create({
         var setOptionDefault = function (option, defaultValue) {
             options[option] = options[option] === undefined ? defaultValue : options[option];
         }
-        setOptionDefault("stiffness", 400.0);
-        setOptionDefault("repulsion", 400.0);
-        setOptionDefault("damping", 0.5);
-        setOptionDefault("stopThreshold", 0.1);
+        setOptionDefault("stiffness", gv.default_layout_options.ForceDirectedLayout["stiffness"]);
+        setOptionDefault("repulsion", gv.default_layout_options.ForceDirectedLayout["repulsion"]);
+        setOptionDefault("damping", gv.default_layout_options.ForceDirectedLayout["damping"]);
+        setOptionDefault("stopThreshold", gv.default_layout_options.ForceDirectedLayout["stopThreshold"]);
 
 
         this._xpad = xpad;
@@ -37,12 +44,12 @@ gv.ForceDirectedLayout = gv.AbstractLayout.create({
         "use strict";
 
         var wrappedGraph = this._wrapGraph(originalGraph);
-        
+
         wrappedGraph.totalEnergy = 1;
         while(wrappedGraph.totalEnergy > 0.5) {
             this._simulationStep(wrappedGraph, 0.03);
         }
-        
+
         // Move the nodes of the original graph
 
         for (var i=0; i < originalGraph.nodes.length; i++) {

@@ -4,6 +4,11 @@
 // Simple debug flag which enables console.log logging
 gv.SugiyamaLayoutDebug = false;
 
+gv.default_layout_options.SugiyamaLayout = {
+    "insertDummyVertices" : false,
+    "optimizeLayout"      : true
+};
+
 gv.SugiyamaLayout = gv.AbstractLayout.create({
 
     init : function (xpad, ypad, options) {
@@ -22,8 +27,8 @@ gv.SugiyamaLayout = gv.AbstractLayout.create({
         var setOptionDefault = function (option, defaultValue) {
             options[option] = options[option] === undefined ? defaultValue : options[option];
         }
-        setOptionDefault("insertDummyVertices", false);
-        setOptionDefault("optimizeLayout", true);
+        setOptionDefault("insertDummyVertices", gv.default_layout_options.SugiyamaLayout["insertDummyVertices"]);
+        setOptionDefault("optimizeLayout", gv.default_layout_options.SugiyamaLayout["optimizeLayout"]);
 
         // Special options which are used if dummy vertices are
         // inserted into the original graph

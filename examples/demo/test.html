@@ -1,0 +1,275 @@
+<!DOCTYPE HTML PUBLIC
+     "-//W3C//DTD HTML 4.01 Transitional//EN"
+     "http://www.w3.org/TR/html4/loose.dtd">
+ <html>
+
+<head>
+    <META HTTP_EQUIV=Content-Type CONTENT="text/html;charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <script type="text/javascript" src="../../src/gv1z.js"></script>
+    <script type="text/javascript" src="../../src/sugiyama_layout.js"></script>
+    <script type="text/javascript" src="../../src/force_directed_layout.js"></script>
+    <style>
+        body {
+            font-family: 'verdana';
+            font-size: 14px;
+        }
+
+        h4 {
+            margin: 2px 2px 5px 2px;
+            padding: 2px 5px;
+            border-radius: 5px;
+
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#7777BB', endColorstr='#FFFFFF', GradientType=1);
+            zoom: 1;
+            background-image: -moz-linear-gradient(right, #FFFFFF 0%, #7777BB 100%);
+            background-image: -o-linear-gradient(right, #FFFFFF 0%, #7777BB 100%);
+            background-image: -webkit-gradient(linear, right top, left top, color-stop(0, #FFFFFF), color-stop(1, #7777BB));
+            background-image: linear-gradient(to left, #FFFFFF 0%, #7777BB 100%);
+        }
+
+        p {
+            margin: 5px;
+        }
+
+        input {
+            height: 12px;
+            font-size: 10px;
+        }
+
+        table td {
+            vertical-align: top;
+        }
+
+        .gv-panel {
+            position     : absolute;
+            width        : 320px;
+            min-height   : 190px;
+
+        }
+
+        .gv-mainscreen {
+            border: solid 1px;
+        }
+
+        .gv-minimap {
+            border: solid 1px;
+        }
+
+        .model, .layout {
+            width : 400px;
+            height: 400px;
+        }
+    </style>
+</head>
+<body onload="init()">
+    <div class="gv-panel">
+        <h4>Apply Layout:</h4>
+        <a href="javascript:init('sugiyama')">Hierachical Layout</a>,
+        <a href="javascript:init('forcedirected')">Force Directed Layout</a>,
+        <a href="javascript:init('circle')">Circle Layout</a>,
+        <a href="javascript:init('square')">Square Layout</a>
+        <br>
+        <br>
+        <h4>Debug:</h4>
+        <div class="gv-debug" id="debug"></div>
+    </div>
+
+    <canvas class="gv-minimap" id="minimap"></canvas>
+    <canvas class="gv-mainscreen" id="screen"></canvas>
+    <br>
+    <table>
+        <tr>
+            <td>
+            <h4>Random Model Generation:</h4>
+            <p>Node scale: <input id="rnscale"></p>
+            <p>Edge scale: <input id="rescale"></p>
+            <a href="javascript:createRandomGraph();init()">Generate Random Graph</a><br>
+            <br>
+            <h4>Model:</h4><textarea id="model" class="model"></textarea></td>
+            <td><h4>Controller Options:</h4>
+            <a href="javascript:init()">Reinitialize Controller</a><br>
+            <textarea id="controller" class="model"></textarea></td>
+            <td>
+            <h4>Layout Options:</h4>
+            <select id="layout_select">
+                <option value="forcedirected">Force Directed</option>
+                <option value="sugiyama">Hierachical (Sugiyama)</option>
+                <option value="circle">Circle</option>
+                <option value="square">Square</option>
+            </select>
+            <a href="javascript:init()">Apply Layout</a>,
+            <br>
+            <br>
+            <p>XPad: <input id="xpad"></p>
+            <p>YPad: <input id="ypad"></p>
+            <textarea id="layout" class="layout"></textarea></td>
+        </td>
+    </table>
+
+    <script>
+        var mainController,
+            lastLayout;
+
+        function init(layoutName) {
+            "use strict";
+
+            var layout, options, xpad, ypad;
+
+            // Get standard layout parameters
+
+            if (gv.$("xpad").value === "") {
+                gv.$("xpad").value = 50;
+            }
+            xpad = parseInt(gv.$("xpad").value);
+
+            if (gv.$("ypad").value === "") {
+                gv.$("ypad").value = 50;
+            }
+            ypad = parseInt(gv.$("ypad").value);
+
+            // Get layout and its options
+
+            if (layoutName === undefined) {
+                layoutName = gv.$("layout_select").options[gv.$("layout_select").selectedIndex].value;
+            }
+
+            if (gv.$("layout").value !== "" && lastLayout === layoutName) {
+                options = JSON.parse(gv.$("layout").value);
+            }
+            lastLayout = layoutName;
+
+            // Construct the layout
+
+            if (layoutName === "forcedirected") {
+                 if (options === undefined) {
+                    options = gv.default_layout_options.ForceDirectedLayout;
+                }
+                layout = new gv.ForceDirectedLayout(xpad, ypad, options);
+            } else if (layoutName === "sugiyama") {
+                 if (options === undefined) {
+                    options = gv.default_layout_options.SugiyamaLayout;
+                }
+                layout = new gv.SugiyamaLayout(xpad, ypad, options);
+            } else if (layoutName === "circle") {
+                options = {};
+                layout = new gv.CircleLayout(xpad, ypad);
+            } else {
+                options = {};
+                layout = new gv.SquareLayout(xpad, ypad);
+            }
+            gv.$("layout").value = JSON.stringify(options, undefined, 4);
+
+            if (gv.$("model").value === "") {
+                createRandomGraph();
+            }
+
+            var graph = parseGraph(20);
+
+            doLayout(graph, layout);
+        }
+
+        function parseGraph(field) {
+            "use strict";
+
+            var graphData = JSON.parse(gv.$("model").value),
+                graph = {
+                    nodes : [],
+                    edges : [],
+                    nodeLookup : {}
+                };
+
+            for (var i=0;i<graphData.nodes.length;i++) {
+                var node = new gv.SimpleNode(graphData.nodes[i],
+                                             new gv.Point(Math.floor(Math.random()*field),
+                                                          Math.floor(Math.random()*field)));
+                graph.nodes.push(node);
+                graph.nodeLookup[node.id] = node;
+            }
+            for (var i=0;i<graphData.edges.length;i++) {
+                graph.edges.push(
+                    new gv.SimpleEdge(graph.nodeLookup[graphData.edges[i][0]],
+                                      graph.nodeLookup[graphData.edges[i][1]]));
+            }
+
+            return graph;
+        }
+
+        function createRandomGraph() {
+            "use strict";
+
+            if (gv.$("rnscale").value === "") {
+                gv.$("rnscale").value = 20;
+            }
+            var scaleNodes = parseInt(gv.$("rnscale").value);
+
+            if (gv.$("rescale").value === "") {
+                gv.$("rescale").value = 20;
+            }
+            var scaleEdges = parseInt(gv.$("rescale").value);
+
+            var graph = {
+                nodes : [],
+                edges : []
+            };
+
+            for (var i = 0; i < scaleNodes; i++) {
+                graph.nodes.push(""+i);
+            }
+            for (var i = 0; i < scaleEdges; i++) {
+                graph.edges.push( [ "" + Math.floor(Math.random() * scaleNodes),
+                                    "" + Math.floor(Math.random() * scaleNodes) ]);
+            }
+
+            gv.$("model").value = JSON.stringify(graph, undefined, 4);
+        }
+
+        function doLayout(graph, layout) {
+            "use strict";
+
+            if (mainController !== undefined) {
+                mainController.stop();
+            }
+
+            if (gv.$("controller").value === "") {
+
+                // Change default options on window dimensions
+                var dim = getWindowDimensions();
+                gv.default_options.screenWidth  = dim.w - 370;
+                gv.default_options.screenHeight = dim.h - 120;
+
+                var defaultOptions = {};
+                gv.copyObject(gv.default_options, defaultOptions);
+                delete defaultOptions["eventHandler"];
+                delete defaultOptions["eventHandlerOverview"];
+                delete   defaultOptions["modelChangeListeners"];
+
+                gv.$("controller").value = JSON.stringify(defaultOptions, undefined, 4);
+            }
+
+            var options = JSON.parse(gv.$("controller").value);
+
+            mainController = new gv.MainController("screen", options, "debug");
+
+            mainController.start(graph);
+            mainController.startOverview("minimap");
+
+            mainController.applyLayout(layout);
+        }
+
+        function getWindowDimensions() {
+            "use strict";
+            var w = window,
+                d = document,
+                e = d.documentElement,
+                g = d.getElementsByTagName('body')[0];
+
+            return {
+                w : w.innerWidth || e.clientWidth || g.clientWidth,
+                h : w.innerHeight|| e.clientHeight|| g.clientHeight
+            };
+        }
+    </script>
+
+</body>
+</html>

@@ -2,6 +2,10 @@
 
 Canvas based graph visualization engine. This implementation is not bound to any library (i.e. works with or without Prototype / JQuery) and should work with all recent browsers which support the canvas element.
 
+[Check out the demo ...](https://rawgit.com/krotik/gv1z/master/examples/demo/test.html)
+
+![Screenshot Demo](https://github.com/krotik/gv1z/blob/master/examples/demo/screenshot.png?raw=true)
+
 ## Author
 
 Gv1z was written by [Matthias Ladkau](http://www.ladkau.de).
