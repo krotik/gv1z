@@ -8,7 +8,7 @@ gv.default_layout_options.ForceDirectedLayout = {
     "stiffness"     : 400.0,
     "repulsion"     : 400.0,
     "damping"       : 0.5,
-    "stopThreshold" : 0.1
+    "stopThreshold" : 0.5
 };
 
 gv.ForceDirectedLayout = gv.AbstractLayout.create({
@@ -34,7 +34,6 @@ gv.ForceDirectedLayout = gv.AbstractLayout.create({
         setOptionDefault("damping", gv.default_layout_options.ForceDirectedLayout["damping"]);
         setOptionDefault("stopThreshold", gv.default_layout_options.ForceDirectedLayout["stopThreshold"]);
 
-
         this._xpad = xpad;
         this._ypad = ypad;
         this._options = options;
@@ -46,21 +45,18 @@ gv.ForceDirectedLayout = gv.AbstractLayout.create({
         var wrappedGraph = this._wrapGraph(originalGraph);
 
         wrappedGraph.totalEnergy = 1;
-        while(wrappedGraph.totalEnergy > 0.5) {
-            this._simulationStep(wrappedGraph, 0.03);
-        }
 
-        // Move the nodes of the original graph
-
-        for (var i=0; i < originalGraph.nodes.length; i++) {
-            var node = originalGraph.nodes[i];
-            var wnode = wrappedGraph.nodeLookup[node.id];
-
-            node.movePosition({
-                x: Math.round(wnode.pos.x * this._xpad),
-                y: Math.round(wnode.pos.y * this._ypad)
-            });
-        }
+        var loop = gv.bind(function () {
+            if (wrappedGraph.totalEnergy > this._options.stopThreshold) {
+                var progress = 100 * this._options.stopThreshold / wrappedGraph.totalEnergy;
+                controller.console.setText("Processing layout: " + Math.round(progress) + "%");
+                this._simulationStep(wrappedGraph, 0.03);
+                window.setTimeout(loop, 10);
+            } else {
+                controller.console.reset();
+            }
+        }, this);
+        loop();
     },
 
     _wrapGraph : function (originalGraph) {
@@ -121,13 +117,6 @@ gv.ForceDirectedLayout = gv.AbstractLayout.create({
         wrappedGraph.totalEnergy = null;
 
         return wrappedGraph;
-    },
-
-    _stepLoop : function () {
-        "use strict";
-        console.log("t");
-
-        window.setTimeout(gv.bind(this._stepLoop, this), 100);
     },
 
     // Apply coulomb's law to a wrapped Graph. Nodes are seen as electrostatic
@@ -240,6 +229,11 @@ gv.ForceDirectedLayout = gv.AbstractLayout.create({
             // Update position
             node.pos.x += node.vel.x * timedelta;
             node.pos.y += node.vel.y * timedelta;
+
+            node.wrappedNode.movePosition({
+                x : node.pos.x * this._xpad,
+                y : node.pos.y * this._ypad
+            });
 
             // Calculate total energy
             var speed = Math.sqrt(node.vel.x * node.vel.x + node.vel.y * node.vel.y);

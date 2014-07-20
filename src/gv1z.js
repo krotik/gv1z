@@ -1034,6 +1034,15 @@ gv.MainController = gv.Class.create({
         this._selectedNodes = [];
         this._internalModelChangeListeners = [];
         this._internalStopListeners = [];
+        this.console = {
+            _text   : [],
+            setText : gv.bind(function (text) {
+                this.console._text = String(text).split("\n");
+            }, this),
+            reset   : gv.bind(function (text) {
+                this.console._text = [];
+            }, this)
+        };
 
         // Load images
         this._img_pan           = new Image();
@@ -1947,6 +1956,13 @@ gv.MainController = gv.Class.create({
                 this._ctx.fillRect(xoffset+57, yoffset, 20, 20);
             }
             this._ctx.drawImage(this._img_zoom,    xoffset + 58, yoffset + 1);
+        }
+
+        // Draw console text
+        this._ctx.font = "8pt Arial";
+        this._ctx.fillStyle = "#555555";
+        for(j = 0; j < this.console._text.length; j++) {
+            this._ctx.fillText(this.console._text[j], 5, 10 + (10 * j));
         }
 
         // Add some debug output
