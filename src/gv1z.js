@@ -543,19 +543,57 @@ gv.SimpleNode = gv.AbstractNode.create({
             return;
         }
 
-        var label = this.getLabel === undefined ? this.id
-                                                : this.getLabel(),
-            th = (this.fontsize * canvasZoom),
-            tw = canvasContext.measureText(label).width;
+        this._drawLabel(canvasContext, canvasPoint, canvasZoom, this.label, 20);
+    },
+
+    _drawLabel : function (canvasContext, canvasPoint, canvasZoom, label, splitCharacters) {
+        "use strict";
+
+        var labelLines,
+            th = (this.fontsize * canvasZoom) * 0.18;
+
+        splitCharacters = splitCharacters === undefined ? 20 : splitCharacters;
+        if (splitCharacters > 0) {
+            labelLines = this._splitLine(this.label, splitCharacters);
+        } else {
+            labelLines = [ label ];
+        }
 
         // Draw label
-        canvasContext.font = h + "pt Arial";
-        canvasContext.fillStyle = "#555555";
-        canvasContext.fillText(
-            label,
-            canvasPoint.x - (tw / 2),
-            canvasPoint.y + this.fontpadding +
-                (this.width * canvasZoom / 2) + canvasZoom + th);
+        canvasContext.font = th  + "pt Arial";
+        canvasContext.fillStyle = "#222222";
+
+        for (var i = 0; i < labelLines.length; i++) {
+            var tw = canvasContext.measureText(labelLines[i]).width;
+            canvasContext.fillText(
+                labelLines[i],
+                canvasPoint.x - (tw / 2),
+                canvasPoint.y + (this.height * canvasZoom / 2) +
+                3 * canvasZoom +
+                (th + 5) * i);
+        }
+    },
+
+    _splitLine : function (line, split) {
+        "use strict";
+
+        var lines = [],
+            currentline = "";
+
+        for (var i=0; i < line.length; i++) {
+            var c = line.charAt(i);
+            if (c === ' ' && currentline.length > split) {
+                lines.push(currentline);
+                currentline = "";
+            } else {
+                currentline += c;
+            }
+        }
+        if (currentline.length > 0) {
+            lines.push(currentline);
+        }
+
+        return lines;
     }
 });
 
