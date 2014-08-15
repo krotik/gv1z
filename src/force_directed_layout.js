@@ -67,18 +67,36 @@ gv.ForceDirectedLayout = gv.AbstractLayout.create({
                 nodes : [],
                 edges : []
             },
+            posmem = {},
             delta = 2 * Math.PI / originalGraph.nodes.length,
             step = 0;
 
         for (var i = 0; i < originalGraph.nodes.length; i++) {
             var node = new gv.LayoutModel.NodeWrapper(originalGraph.nodes[i]);
 
-            // Add layout specific attributes
-            node.pos  = {
-                x : Math.cos(step) * this._xpad,
-                y : Math.sin(step) * this._ypad
-            };
-            node.mass = 1;
+            if (originalGraph.nodes[i].x === 0 && originalGraph.nodes[i].y === 0) {
+                // Add layout specific attributes
+                node.pos = {
+                    x : Math.cos(step) * 10,
+                    y : Math.sin(step) * 10
+                };
+            } else {
+                var newx = originalGraph.nodes[i].x / this._xpad,
+                    newy = originalGraph.nodes[i].y / this._ypad;
+
+                while(posmem[newx + ":" + newy] !== undefined) {
+                    newx += -i * 0.001;
+                    newy += -i * 0.001;
+                }
+
+                node.pos = {
+                    x : newx,
+                    y : newy
+                };
+                posmem[newx + ":" + newy] = node;
+            }
+
+            node.mass = 10;
             node.vel  = { x:0, y:0 };
             node.acc  = { x:0, y:0 };
 

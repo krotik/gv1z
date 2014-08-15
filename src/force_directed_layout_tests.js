@@ -41,8 +41,8 @@
     }), ["1", "2", "3", "4"], "Correct outgoing edges are calculated" );
 
     // Nodes have expected attributes
-    deepEqual(wrappedGraph.nodes[0].pos, { x:50, y:0 });
-    equal(wrappedGraph.nodes[0].mass, 1);
+    deepEqual(wrappedGraph.nodes[0].pos, { x:10, y:0 });
+    equal(wrappedGraph.nodes[0].mass, 10);
     deepEqual(wrappedGraph.nodes[0].vel, { x:0, y:0 });
     deepEqual(wrappedGraph.nodes[0].acc, { x:0, y:0 });
 });
@@ -72,19 +72,19 @@ test("Test Main Physics", function() {
 
     layout._applyCoulombsLaw(wrappedGraph);
 
-    deepEqual(wrappedGraph.nodes[0].acc, { x: 0.6331887903550433,
-                                           y: 0.013902348690429939 });
-    deepEqual(wrappedGraph.nodes[1].acc, { x: -0.6331887903550433,
-                                           y: -0.013902348690429939 });
+    deepEqual(wrappedGraph.nodes[0].acc, { x: 1.496353732878798,
+                                           y: 0.16296921843234416 });
+    deepEqual(wrappedGraph.nodes[1].acc, { x: -1.496353732878798,
+                                           y: -0.16296921843234416 });
 
     // Test edges retract - pulling nodes together
 
     layout._applyHookesLaw(wrappedGraph);
 
-    deepEqual(wrappedGraph.nodes[0].acc, { x: -9819.415000766554,
-                                           y: -215.59593814058059 });
-    deepEqual(wrappedGraph.nodes[1].acc, { x: 9819.415000766554,
-                                           y: 215.59593814058059 });
+    deepEqual(wrappedGraph.nodes[0].acc, { x: -180.62121718405956,
+                                           y: -19.671617713115374 });
+    deepEqual(wrappedGraph.nodes[1].acc, { x: 180.62121718405956,
+                                           y: 19.671617713115374 });
 
     // Test nodes are slightly attracted to the center
 
@@ -110,13 +110,13 @@ test("Test Main Physics", function() {
     layout._updatePosition(wrappedGraph, 1);
 
     deepEqual(wrappedGraph.nodes[0].acc, { x: 0, y: 0 });
-    deepEqual(wrappedGraph.nodes[0].vel, { x: -4910.107500383277,
-                                           y: -112.1979690702903 });
+    deepEqual(wrappedGraph.nodes[0].vel, { x: -90.35060859202979,
+                                           y: -10.275808856557687 });
     deepEqual(wrappedGraph.nodes[1].acc, { x: 0, y: 0 });
-    deepEqual(wrappedGraph.nodes[1].vel, { x: 5109.707500383277,
-                                           y: 107.79796907029025 });
+    deepEqual(wrappedGraph.nodes[1].vel, { x: 94.31060859202978,
+                                           y: 9.835808856557687 });
     
-    equal(wrappedGraph.totalEnergy, 25121237.595596194);
+    equal(wrappedGraph.totalEnergy, 86300.29374734228);
     
     // Now apply a complete simulation step
     
@@ -124,7 +124,7 @@ test("Test Main Physics", function() {
     
     // Energy level got up because the nodes are now on the move
     
-    equal(wrappedGraph.totalEnergy, 784344594.3151748);
+    equal(wrappedGraph.totalEnergy, 499.7011274848018);
 
     // Wait until the energy level reaches a minimum
     // (because of the damping factor).
@@ -135,21 +135,21 @@ test("Test Main Physics", function() {
         i++;
     }
 
-    equal(i, 563);
-    equal(wrappedGraph.totalEnergy, 0.09923331533679589);
+    equal(i, 153);
+    equal(wrappedGraph.totalEnergy, 0.09899069477462706);
 
     deepEqual(wrappedGraph.nodes[0].acc, { x : 0, y: 0 });
-    deepEqual(wrappedGraph.nodes[0].vel, { x : -0.31493668751053067,
-                                           y : 0.006942492109450636 });
+    deepEqual(wrappedGraph.nodes[0].vel, { x : 0.1391751582571491,
+                                           y : 0.001373527633620788 });
     deepEqual(wrappedGraph.nodes[1].acc, { x : 0, y: 0 });
-    deepEqual(wrappedGraph.nodes[1].vel, { x : -0.3149366875105321,
-                                           y : 0.006942492109450562 });
+    deepEqual(wrappedGraph.nodes[1].vel, { x : -0.013877117772184332,
+                                           y : -0.015295532131950094 });
 
-    deepEqual(wrappedGraph.nodes[0].pos, { x : 0.14702761677500506,
-                                           y : -0.05367291705453648 });
+    deepEqual(wrappedGraph.nodes[0].pos, { x : -3.772050971714288,
+                                           y : 0.16269504046745376 });
 
-    deepEqual(wrappedGraph.nodes[1].pos, { x : 2.4393742339877518,
-                                           y : -0.003341953403159622 });
+    deepEqual(wrappedGraph.nodes[1].pos, { x : -1.4411774081320283,
+                                           y : 0.41655255729324353 });
     
     
 });
