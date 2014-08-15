@@ -754,6 +754,7 @@ gv.default_eventHandler = {
         var delta = gv.calculateWheelDelta(event);
         delta = (delta / 10) * 8;
         this.changeZoom(delta);
+        event.preventDefault();
     },
 
     // Handle mouse click events
