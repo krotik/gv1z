@@ -503,6 +503,10 @@ gv.SimpleNode = gv.AbstractNode.create({
 
         if (getLabelFunc !== undefined) {
             this.getLabel = getLabelFunc;
+        } else {
+            this.getLabel = function () {
+                return this.id;
+            }
         }
 
         // Add height for text
@@ -543,18 +547,18 @@ gv.SimpleNode = gv.AbstractNode.create({
             return;
         }
 
-        this._drawLabel(canvasContext, canvasPoint, canvasZoom, this.label, 20);
+        this._drawLabel(canvasContext, canvasPoint, canvasZoom, this.getLabel(), 20);
     },
 
     _drawLabel : function (canvasContext, canvasPoint, canvasZoom, label, splitCharacters) {
         "use strict";
 
         var labelLines,
-            th = (this.fontsize * canvasZoom) * 0.18;
+            th = (this.fontsize * canvasZoom) * 0.48;
 
         splitCharacters = splitCharacters === undefined ? 20 : splitCharacters;
         if (splitCharacters > 0) {
-            labelLines = this._splitLine(this.label, splitCharacters);
+            labelLines = this._splitLine(label, splitCharacters);
         } else {
             labelLines = [ label ];
         }
@@ -569,7 +573,7 @@ gv.SimpleNode = gv.AbstractNode.create({
                 labelLines[i],
                 canvasPoint.x - (tw / 2),
                 canvasPoint.y + (this.height * canvasZoom / 2) +
-                3 * canvasZoom +
+                6 * canvasZoom +
                 (th + 5) * i);
         }
     },
