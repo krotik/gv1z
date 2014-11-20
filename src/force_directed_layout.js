@@ -5,10 +5,10 @@
 gv.ForceDirectedLayoutDebug = false;
 
 gv.default_layout_options.ForceDirectedLayout = {
-    "stiffness"     : 4000.0,
-    "repulsion"     : 4000.0,
-    "damping"       : 0.5,
-    "stopThreshold" : 0.5
+    "stiffness"     : 500.0,
+    "repulsion"     : 400.0,
+    "damping"       : 0.9,
+    "stopThreshold" : 0.7
 };
 
 gv.ForceDirectedLayout = gv.AbstractLayout.create({
